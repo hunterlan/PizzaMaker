@@ -10,13 +10,21 @@ using PizzaMaker.Models;
 
 namespace PizzaMaker.Controllers
 {
+    public class PizzaCount
+    {
+        public Pizza pizza { get; set; }
+        public int count { get; set; }
+    }
     public class PizzasController : Controller
     {
         private readonly PizzaContext _context = new PizzaContext();
+        private List<PizzaCount> ordersPizza = new List<PizzaCount>();
 
         // GET: Pizzas
         public async Task<IActionResult> Index()
         {
+
+
             return View(await _context.Pizzas.ToListAsync());
         }
 
@@ -36,6 +44,20 @@ namespace PizzaMaker.Controllers
             }
 
             return PartialView(pizza);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Details(Pizza toCart)
+        {
+            toCart = _context.Pizzas.FirstOrDefault(m => m.ID == toCart.ID);
+            ordersPizza.Add(toCart);
+
+            return await Index();
+        }
+
+        public async Task<IActionResult> Cart()
+        {
+
         }
     }
 }
