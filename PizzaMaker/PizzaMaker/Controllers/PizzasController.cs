@@ -35,7 +35,7 @@ namespace PizzaMaker.Controllers
                 return NotFound();
             }
 
-            return View(pizza);
+            return PartialView(pizza);
         }
     }
 }
