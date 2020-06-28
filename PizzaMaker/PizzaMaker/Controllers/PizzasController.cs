@@ -9,21 +9,53 @@ using PizzaMaker.Context;
 using PizzaMaker.Models;
 
 namespace PizzaMaker.Controllers
-{
-    public class PizzaCount
-    {
-        public Pizza pizza { get; set; }
-        public int count { get; set; }
-    }
+{ 
     public class PizzasController : Controller
     {
         private readonly PizzaContext _context = new PizzaContext();
         private List<PizzaCount> ordersPizza = new List<PizzaCount>();
 
+        private void FillPizzaList()
+        {
+            var pizzas = _context.Pizzas.ToList();
+            int i = 0;
+
+            foreach(var pizza in pizzas)
+            {
+                PizzaCount newPizza = new PizzaCount();
+
+                newPizza.pizza = pizza;
+                newPizza.count = 0;
+
+                ordersPizza.Add(newPizza);
+
+                i++;
+            }
+        }
+
+        private int FindUserListPizza(Pizza pizza)
+        {
+            int index = 0;
+
+            for(int i = 0; i < ordersPizza.Count; i++)
+            {
+                if (ordersPizza[i].pizza.ID == pizza.ID)
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            return index;
+        }
+
         // GET: Pizzas
         public async Task<IActionResult> Index()
         {
-
+            if(ordersPizza.Count == 0)
+            {
+                FillPizzaList();
+            }
 
             return View(await _context.Pizzas.ToListAsync());
         }
@@ -50,14 +82,28 @@ namespace PizzaMaker.Controllers
         public async Task<IActionResult> Details(Pizza toCart)
         {
             toCart = _context.Pizzas.FirstOrDefault(m => m.ID == toCart.ID);
-            ordersPizza.Add(toCart);
+            int currentIndex = FindUserListPizza(toCart);
+
+            ordersPizza[currentIndex].count++;
 
             return await Index();
         }
 
-        public async Task<IActionResult> Cart()
+        public IActionResult Cart()
         {
+            int countPizzaInCart = 0;
 
+            for (int i = 0; i < ordersPizza.Count; i++)
+            {
+                if (ordersPizza[i].count != 0)
+                {
+                    countPizzaInCart += ordersPizza[i].count;
+                }
+            }
+
+            ViewData["CountList"] = countPizzaInCart;
+
+            return View(ordersPizza);
         }
     }
 }

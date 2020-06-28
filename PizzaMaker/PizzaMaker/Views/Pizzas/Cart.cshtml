@@ -1,0 +1,25 @@
+﻿@model IEnumerable<PizzaMaker.Models.PizzaCount>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="container">
+    @if ((int)ViewData["CountList"] == 0)
+    {
+        <h3>Cart is empty!</h3>
+    }
+    else
+    {
+        @foreach (var item in Model)
+        {
+            <div class="row">
+                <div class="d-flex justify-content-center shadow-sm col-md-auto">
+                    <img alt="" src="data:image/png;base64, @Convert.ToBase64String(item.pizza.Image)" style="height:100px;width:100px; padding-right: 1em;" />
+                    @Html.DisplayFor(modelItem => item.pizza.Name)<br />
+                    @Html.DisplayFor(modelItem => item.count)  <br />
+                </div>
+            </div>
+        }
+    }
+</div>
