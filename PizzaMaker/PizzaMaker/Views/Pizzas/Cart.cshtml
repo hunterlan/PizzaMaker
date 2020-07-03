@@ -4,22 +4,38 @@
     ViewData["Title"] = "Index";
 }
 
-<div class="container">
-    @if ((int)ViewData["CountList"] == 0)
-    {
-        <h3>Cart is empty!</h3>
-    }
-    else
-    {
-        @foreach (var item in Model)
-        {
-            <div class="row">
-                <div class="d-flex justify-content-center shadow-sm col-md-auto">
-                    <img alt="" src="data:image/png;base64, @Convert.ToBase64String(item.pizza.Image)" style="height:100px;width:100px; padding-right: 1em;" />
-                    @Html.DisplayFor(modelItem => item.pizza.Name)<br />
-                    @Html.DisplayFor(modelItem => item.count)  <br />
-                </div>
-            </div>
-        }
-    }
-</div>
+@if ((int)ViewData["CountList"] == 0)
+{
+    <h3>Cart is empty!</h3>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    <h3>Cart</h3>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <img alt="" src="data:image/png;base64, @Convert.ToBase64String(item.pizza.Image)" style="height:50px;width:50px;" />
+                    </td>
+                    <td>
+                        <h5>@Html.DisplayFor(modelItem => item.pizza.Name)</h5>
+                    </td>
+                    <td>
+                        x @Html.DisplayFor(modelItem => item.count)  <br />
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.pizza.Price) ₴
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

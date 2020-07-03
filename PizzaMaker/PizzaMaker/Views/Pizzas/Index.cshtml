@@ -8,11 +8,12 @@
     <div id="dialogContent" class="modal-dialog modal-lg"></div>
 </div>
 <div class="container">
-    @foreach (var item in Model)
-    {
-        <div class="row">
+    <div class="row justify-content-around">
+        @foreach (var item in Model)
+        {
+
             <a class="compItem" asp-action="Details" asp-route-id="@item.ID" style="color: black; text-decoration: none;">
-                <div class="d-flex justify-content-center shadow-sm col-md-auto">
+                <div class="d-flex justify-content-center shadow-sm col-12">
                     <img alt="" src="data:image/png;base64, @Convert.ToBase64String(item.Image)" style="height:100px;width:100px; padding-right: 1em;" />
                     @Html.DisplayFor(modelItem => item.Name)<br />
                     @Html.DisplayFor(modelItem => item.Recipe)<br />
@@ -22,8 +23,8 @@
                     </div>-->
                 </div>
             </a>
-        </div>
-    }
+        }
+    </div>
 </div>
 
 @section scripts
@@ -32,7 +33,7 @@
 
         $(function () {
             $.ajaxSetup({ cache: false });
-           $(".compItem").click(function (e) {
+            $(".compItem").click(function (e) {
 
                 e.preventDefault();
                 $.get(this.href, function (data) {
