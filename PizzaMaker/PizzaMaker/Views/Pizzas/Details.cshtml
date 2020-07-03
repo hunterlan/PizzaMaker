@@ -13,13 +13,13 @@
         <div class="modal-body">
             <form method="post" action="/Pizzas/Details">
                 <div class="text-center">
-                    <input type="hidden" name="ID" value="@Model.ID" />
                     <img alt="" class="justify-content-center" src="data:image/png;base64, @Convert.ToBase64String(Model.Image)" />
                 </div>
                 <p class="lead">@Html.DisplayFor(model => model.Description)</p>
                 <div class="d-flex justify-content-between col-md-auto">
                     <h4>@Html.DisplayFor(model => model.Price) ₴</h4>
-                    <input type="submit" value="Add to cart"/>
+                    <input type="hidden" name="ID" value="@Model.ID" />
+                    <input type="submit" value="Add to cart" />
                 </div>
             </form>
         </div>

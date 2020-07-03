@@ -15,7 +15,7 @@ namespace PizzaMaker.Controllers
     {
         private readonly PizzaContext _context = new PizzaContext();
         private const int KEY_CACHING = 51;
-        private List<PizzaCount> ordersPizza = new List<PizzaCount>();
+        private List<PizzaCount> ordersPizza;
         private IMemoryCache _cache;
 
         public PizzasController(IMemoryCache memoryCache)
@@ -61,14 +61,8 @@ namespace PizzaMaker.Controllers
         // GET: Pizzas
         public async Task<IActionResult> Index()
         {
-            if (!_cache.TryGetValue(KEY_CACHING, out ordersPizza))
-            {
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-                .SetPriority(CacheItemPriority.NeverRemove);
-
-                _cache.Set(KEY_CACHING, ordersPizza, cacheEntryOptions);
-            }
-            else if (ordersPizza.Count == 0)
+            if (ordersPizza == null || ordersPizza.Count == 0 || 
+                !_cache.TryGetValue(KEY_CACHING, out ordersPizza))
             {
                 FillPizzaList();
             }
@@ -84,18 +78,6 @@ namespace PizzaMaker.Controllers
                 return NotFound();
             }
 
-            if (!_cache.TryGetValue(KEY_CACHING, out ordersPizza))
-            {
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-                .SetPriority(CacheItemPriority.NeverRemove);
-
-                _cache.Set(KEY_CACHING, ordersPizza, cacheEntryOptions);
-            }
-            else
-            {
-                FillPizzaList();
-            }
-
             var pizza = await _context.Pizzas
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (pizza == null)
@@ -107,9 +89,15 @@ namespace PizzaMaker.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Details(Pizza toCart)
+        public IActionResult Details(Pizza toCart)
         {
             toCart = _context.Pizzas.FirstOrDefault(m => m.ID == toCart.ID);
+
+            if (!_cache.TryGetValue(KEY_CACHING, out ordersPizza))
+            {
+                FillPizzaList();
+            }
+
             //Finding index of pizza, which user choosed
             int currentIndex = FindUserListPizza(toCart);
 
@@ -120,7 +108,8 @@ namespace PizzaMaker.Controllers
 
             _cache.Set(KEY_CACHING, ordersPizza, cacheEntryOptions);
 
-            return await Index();
+            //It passed, but anyway failing.... Why? 
+            return RedirectToAction("Index");
         }
 
         public IActionResult Cart()
