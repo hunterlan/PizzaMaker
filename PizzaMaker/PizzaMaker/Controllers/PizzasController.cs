@@ -5,22 +5,31 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using PizzaMaker.Context;
 using PizzaMaker.Models;
 
 namespace PizzaMaker.Controllers
-{ 
+{
     public class PizzasController : Controller
     {
         private readonly PizzaContext _context = new PizzaContext();
+        private const int KEY_CACHING = 51;
         private List<PizzaCount> ordersPizza = new List<PizzaCount>();
+        private IMemoryCache _cache;
+
+        public PizzasController(IMemoryCache memoryCache)
+        {
+            _cache = memoryCache;
+        }
 
         private void FillPizzaList()
         {
+            ordersPizza = new List<PizzaCount>();
             var pizzas = _context.Pizzas.ToList();
             int i = 0;
 
-            foreach(var pizza in pizzas)
+            foreach (var pizza in pizzas)
             {
                 PizzaCount newPizza = new PizzaCount();
 
@@ -37,7 +46,7 @@ namespace PizzaMaker.Controllers
         {
             int index = 0;
 
-            for(int i = 0; i < ordersPizza.Count; i++)
+            for (int i = 0; i < ordersPizza.Count; i++)
             {
                 if (ordersPizza[i].pizza.ID == pizza.ID)
                 {
@@ -52,7 +61,14 @@ namespace PizzaMaker.Controllers
         // GET: Pizzas
         public async Task<IActionResult> Index()
         {
-            if(ordersPizza.Count == 0)
+            if (!_cache.TryGetValue(KEY_CACHING, out ordersPizza))
+            {
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetPriority(CacheItemPriority.NeverRemove);
+
+                _cache.Set(KEY_CACHING, ordersPizza, cacheEntryOptions);
+            }
+            else if (ordersPizza.Count == 0)
             {
                 FillPizzaList();
             }
@@ -66,6 +82,18 @@ namespace PizzaMaker.Controllers
             if (id == null)
             {
                 return NotFound();
+            }
+
+            if (!_cache.TryGetValue(KEY_CACHING, out ordersPizza))
+            {
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetPriority(CacheItemPriority.NeverRemove);
+
+                _cache.Set(KEY_CACHING, ordersPizza, cacheEntryOptions);
+            }
+            else
+            {
+                FillPizzaList();
             }
 
             var pizza = await _context.Pizzas
@@ -82,9 +110,15 @@ namespace PizzaMaker.Controllers
         public async Task<IActionResult> Details(Pizza toCart)
         {
             toCart = _context.Pizzas.FirstOrDefault(m => m.ID == toCart.ID);
+            //Finding index of pizza, which user choosed
             int currentIndex = FindUserListPizza(toCart);
 
             ordersPizza[currentIndex].count++;
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetPriority(CacheItemPriority.NeverRemove);
+
+            _cache.Set(KEY_CACHING, ordersPizza, cacheEntryOptions);
 
             return await Index();
         }
@@ -93,11 +127,14 @@ namespace PizzaMaker.Controllers
         {
             int countPizzaInCart = 0;
 
-            for (int i = 0; i < ordersPizza.Count; i++)
+            if (_cache.TryGetValue(KEY_CACHING, out ordersPizza))
             {
-                if (ordersPizza[i].count != 0)
+                for (int i = 0; i < ordersPizza.Count; i++)
                 {
-                    countPizzaInCart += ordersPizza[i].count;
+                    if (ordersPizza[i].count != 0)
+                    {
+                        countPizzaInCart += ordersPizza[i].count;
+                    }
                 }
             }
 

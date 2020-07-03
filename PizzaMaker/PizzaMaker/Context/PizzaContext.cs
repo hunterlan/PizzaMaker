@@ -40,7 +40,7 @@ namespace PizzaMaker.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySql(GetConnection("DeveloperHomeDB"));
+            optionsBuilder.UseMySql(GetConnection("DeveloperRemoteDB"));
         }
     }
 }
