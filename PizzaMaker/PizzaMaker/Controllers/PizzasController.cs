@@ -121,7 +121,10 @@ namespace PizzaMaker.Controllers
                 {
                     if (ordersPizza[i].count != 0)
                     {
-                        totalPrice += ordersPizza[i].pizza.Price;
+                        for(int j = 0; j < ordersPizza[i].count; j++)
+                        {
+                            totalPrice += ordersPizza[i].pizza.Price;
+                        }
                     }
                 }
             }
@@ -135,11 +138,28 @@ namespace PizzaMaker.Controllers
         public IActionResult Cart(Order order)
         {
             OrderContext orderContext = new OrderContext();
+            List<Order> userOrders = new List<Order>();
 
             ordersPizza = (List<PizzaCount>)_cache.Get(KEY_CACHING);
             order.TotalPrice = (decimal)ViewData["TotalPrice"];
 
+            for (int i = 0; i < ordersPizza.Count; i++)
+            {
+                if (ordersPizza[i].count != 0)
+                {
+                    order.PizzaID = ordersPizza[i].pizza.ID;
+                    order.Count = ordersPizza[i].count;
 
+                    userOrders.Add(order);
+                }
+            }
+
+            foreach(Order userOrder in userOrders)
+            {
+                orderContext.Add(User);
+            }
+
+            orderContext.SaveChanges();
 
             return RedirectToAction("Index");
         }
