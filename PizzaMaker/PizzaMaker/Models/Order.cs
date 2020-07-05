@@ -15,5 +15,16 @@ namespace PizzaMaker.Models
         public decimal TotalPrice { get; set; }
         public int PizzaID { get; set; }
         public int Count { get; set; }
+
+        public Order() { }
+
+        public Order(Order oldOrder)
+        {
+            NumberOrder = oldOrder.NumberOrder;
+            NameReciver = oldOrder.NameReciver;
+            Phone = oldOrder.Phone;
+            Adress = oldOrder.Adress;
+            TotalPrice = oldOrder.TotalPrice;
+        }
     }
 }

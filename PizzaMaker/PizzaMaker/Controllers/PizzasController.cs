@@ -58,6 +58,24 @@ namespace PizzaMaker.Controllers
             return index;
         }
 
+        private decimal getTotalPrice()
+        {
+            decimal totalPrice = 0;
+
+            for (int i = 0; i < ordersPizza.Count; i++)
+            {
+                if (ordersPizza[i].count != 0)
+                {
+                    for (int j = 0; j < ordersPizza[i].count; j++)
+                    {
+                        totalPrice += ordersPizza[i].pizza.Price;
+                    }
+                }
+            }
+
+            return totalPrice;
+        }
+
         // GET: Pizzas
         public async Task<IActionResult> Index()
         {
@@ -131,6 +149,8 @@ namespace PizzaMaker.Controllers
                 }
             }
 
+            totalPrice = Math.Round(totalPrice, 2);
+
             ViewData["CountList"] = countList;
             ViewData["TotalPrice"] = totalPrice;
 
@@ -138,22 +158,30 @@ namespace PizzaMaker.Controllers
         }
 
         [HttpPost]
-        public IActionResult Cart(Order order)
+        public IActionResult Cart(string[] datas)
         {
             OrderContext orderContext = new OrderContext();
             List<Order> userOrders = new List<Order>();
+            Order order = new Order();
+            Random rand = new Random();
+
+            order.NameReciver = datas[0];
+            order.Adress = datas[1];
+            order.Phone = datas[2];
+            order.NumberOrder = rand.Next(0, 1000);
 
             ordersPizza = (List<PizzaCount>)_cache.Get(KEY_CACHING);
-            order.TotalPrice = (decimal)ViewData["TotalPrice"];
+            order.TotalPrice = getTotalPrice();
 
             for (int i = 0; i < ordersPizza.Count; i++)
             {
+                Order nonChangableOrder = new Order(order);
                 if (ordersPizza[i].count != 0)
                 {
-                    order.PizzaID = ordersPizza[i].pizza.ID;
-                    order.Count = ordersPizza[i].count;
+                    nonChangableOrder.PizzaID = ordersPizza[i].pizza.ID;
+                    nonChangableOrder.Count = ordersPizza[i].count;
 
-                    userOrders.Add(order);
+                    userOrders.Add(nonChangableOrder);
                 }
             }
 
@@ -162,7 +190,10 @@ namespace PizzaMaker.Controllers
                 orderContext.Add(userOrder);
             }
 
-            orderContext.SaveChanges();
+            if(orderContext.SaveChanges() != 0)
+            {
+                _cache.Remove(KEY_CACHING);
+            }
 
             return RedirectToAction("Index");
         }
