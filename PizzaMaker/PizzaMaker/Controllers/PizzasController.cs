@@ -108,13 +108,12 @@ namespace PizzaMaker.Controllers
 
             _cache.Set(KEY_CACHING, ordersPizza, cacheEntryOptions);
 
-            //It passed, but anyway failing.... Why? 
             return RedirectToAction("Index");
         }
 
         public IActionResult Cart()
         {
-            int countPizzaInCart = 0;
+            decimal totalPrice = 0;
 
             if (_cache.TryGetValue(KEY_CACHING, out ordersPizza))
             {
@@ -122,14 +121,25 @@ namespace PizzaMaker.Controllers
                 {
                     if (ordersPizza[i].count != 0)
                     {
-                        countPizzaInCart += ordersPizza[i].count;
+                        totalPrice += ordersPizza[i].pizza.Price;
                     }
                 }
             }
 
-            ViewData["CountList"] = countPizzaInCart;
+            ViewData["TotalPrice"] = totalPrice;
 
             return View(ordersPizza);
+        }
+
+        [HttpPost]
+        public IActionResult Cart(Order order)
+        {
+            ordersPizza = (List<PizzaCount>)_cache.Get(KEY_CACHING);
+            order.TotalPrice = (decimal)ViewData["TotalPrice"];
+
+
+
+            return RedirectToAction("Index");
         }
     }
 }

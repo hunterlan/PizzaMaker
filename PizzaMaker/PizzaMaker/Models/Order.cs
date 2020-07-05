@@ -8,6 +8,7 @@ namespace PizzaMaker.Models
     public class Order
     {
         public int ID { get; set; }
+        public int NumberOrder { get; set; }
         public string NameReciver { get; set; }
         public string Phone { get; set; }
         public string Adress { get; set; }
