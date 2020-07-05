@@ -134,6 +134,8 @@ namespace PizzaMaker.Controllers
         [HttpPost]
         public IActionResult Cart(Order order)
         {
+            OrderContext orderContext = new OrderContext();
+
             ordersPizza = (List<PizzaCount>)_cache.Get(KEY_CACHING);
             order.TotalPrice = (decimal)ViewData["TotalPrice"];
 
