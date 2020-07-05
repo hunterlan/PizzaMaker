@@ -21,21 +21,37 @@ else
         <tbody>
             @foreach (var item in Model)
             {
-                <tr>
-                    <td>
-                        <img alt="" src="data:image/png;base64, @Convert.ToBase64String(item.pizza.Image)" style="height:50px;width:50px;" />
-                    </td>
-                    <td>
-                        <h5>@Html.DisplayFor(modelItem => item.pizza.Name)</h5>
-                    </td>
-                    <td>
-                        x @Html.DisplayFor(modelItem => item.count)  <br />
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.pizza.Price) ₴
-                    </td>
-                </tr>
+                @if (item.count > 0)
+                {
+                    <tr>
+                        <td>
+                            <img alt="" src="data:image/png;base64, @Convert.ToBase64String(item.pizza.Image)" style="height:50px;width:50px;" />
+                        </td>
+                        <td>
+                            <h5>@Html.DisplayFor(modelItem => item.pizza.Name)</h5>
+                        </td>
+                        <td>
+                            x @Html.DisplayFor(modelItem => item.count)<br />
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.pizza.Price) ₴
+                        </td>
+                    </tr>
+                }
             }
         </tbody>
+        <tfoot>
+            <tr>
+                <td>
+                    <h3>Total</h3>
+                </td>
+                <td></td>
+                <td></td>
+                <td>
+                    540,00₴
+                </td>
+            </tr>
+
+        </tfoot>
     </table>
 }
