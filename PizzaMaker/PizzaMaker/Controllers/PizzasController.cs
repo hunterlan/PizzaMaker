@@ -26,6 +26,9 @@ namespace PizzaMaker.Controllers
             _cache = memoryCache;
         }
 
+        /// <summary>
+        /// Adding all available pizzas from DB to user list
+        /// </summary>
         private void FillPizzaList()
         {
             ordersPizza = new List<PizzaCount>();
@@ -49,6 +52,13 @@ namespace PizzaMaker.Controllers
             _logger.LogInformation("Operation done.");
         }
 
+        /// <summary>
+        /// Find pizza, which user choosed
+        /// </summary>
+        /// <returns>
+        /// ID of pizza
+        /// </returns>
+        /// <param name="pizza">Choosed pizza</param>
         private int FindUserListPizza(Pizza pizza)
         {
             int index = 0;
@@ -64,7 +74,12 @@ namespace PizzaMaker.Controllers
 
             return index;
         }
-
+        /// <summary>
+        /// Get total price of order
+        /// </summary>
+        /// <returns>
+        /// Total price of ordering
+        /// </returns>
         private decimal getTotalPrice()
         {
             decimal totalPrice = 0;
