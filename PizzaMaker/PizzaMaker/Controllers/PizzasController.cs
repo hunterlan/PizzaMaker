@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using PizzaMaker.Context;
 using PizzaMaker.Models;
 
@@ -17,9 +18,11 @@ namespace PizzaMaker.Controllers
         private const int KEY_CACHING = 51;
         private List<PizzaCount> ordersPizza;
         private IMemoryCache _cache;
+        private readonly ILogger _logger;
 
-        public PizzasController(IMemoryCache memoryCache)
+        public PizzasController(IMemoryCache memoryCache, ILogger<PizzasController> logger)
         {
+            _logger = logger;
             _cache = memoryCache;
         }
 
@@ -28,6 +31,8 @@ namespace PizzaMaker.Controllers
             ordersPizza = new List<PizzaCount>();
             var pizzas = _context.Pizzas.ToList();
             int i = 0;
+
+            _logger.LogInformation("Fill user list with all pizza");
 
             foreach (var pizza in pizzas)
             {
@@ -40,6 +45,8 @@ namespace PizzaMaker.Controllers
 
                 i++;
             }
+
+            _logger.LogInformation("Operation done.");
         }
 
         private int FindUserListPizza(Pizza pizza)
@@ -82,7 +89,12 @@ namespace PizzaMaker.Controllers
             if (ordersPizza == null || ordersPizza.Count == 0 || 
                 !_cache.TryGetValue(KEY_CACHING, out ordersPizza))
             {
+                _logger.LogInformation("Cache is empty.");
                 FillPizzaList();
+            }
+            else
+            {
+                _logger.LogInformation("Current data has read from cache.");
             }
 
             return View(await _context.Pizzas.ToListAsync());
@@ -113,7 +125,12 @@ namespace PizzaMaker.Controllers
 
             if (!_cache.TryGetValue(KEY_CACHING, out ordersPizza))
             {
+                _logger.LogInformation("Cache is empty.");
                 FillPizzaList();
+            }
+            else
+            {
+                _logger.LogInformation("Current data has read from cache.");
             }
 
             //Finding index of pizza, which user choosed
@@ -136,6 +153,7 @@ namespace PizzaMaker.Controllers
 
             if (_cache.TryGetValue(KEY_CACHING, out ordersPizza))
             {
+                _logger.LogInformation("We have something here. Starting count.");
                 for (int i = 0; i < ordersPizza.Count; i++)
                 {
                     if (ordersPizza[i].count != 0)
@@ -147,6 +165,11 @@ namespace PizzaMaker.Controllers
                         }
                     }
                 }
+                _logger.LogInformation("End");
+            }
+            else
+            {
+                _logger.LogInformation("Cart is empty, dude.");
             }
 
             totalPrice = Math.Round(totalPrice, 2);
@@ -170,9 +193,12 @@ namespace PizzaMaker.Controllers
             order.Phone = datas[2];
             order.NumberOrder = rand.Next(0, 1000);
 
+            _logger.LogInformation("Getting data about cart from cache.");
+
             ordersPizza = (List<PizzaCount>)_cache.Get(KEY_CACHING);
             order.TotalPrice = getTotalPrice();
 
+            _logger.LogInformation("Finally, fill data about order.");
             for (int i = 0; i < ordersPizza.Count; i++)
             {
                 Order nonChangableOrder = new Order(order);
@@ -185,14 +211,20 @@ namespace PizzaMaker.Controllers
                 }
             }
 
-            foreach(Order userOrder in userOrders)
+            _logger.LogInformation("Adding to DB data.");
+            foreach (Order userOrder in userOrders)
             {
                 orderContext.Add(userOrder);
             }
 
             if(orderContext.SaveChanges() != 0)
             {
+                _logger.LogInformation("Clear cache");
                 _cache.Remove(KEY_CACHING);
+            }
+            else
+            {
+                _logger.LogWarning("Data not written to DB.");
             }
 
             return RedirectToAction("Index");
