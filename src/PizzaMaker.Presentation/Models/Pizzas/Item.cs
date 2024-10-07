@@ -1,6 +1,6 @@
 ﻿namespace PizzaMaker.Presentation.Models.Pizzas;
 
-public class Pizza
+public class Item
 {
     public int Id { get; set; }
     public required string Name { get; set; }

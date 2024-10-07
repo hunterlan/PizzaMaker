@@ -1,9 +1,14 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Microsoft.Extensions.Caching.Distributed
+@*@rendermode InteractiveServer*@
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inject IDistributedCache Cache
 
-@if (Pizzas.Any())
+@if (_pizzas.Any())
 {
     <FluentStack>
-        @foreach (var pizza in Pizzas)
+        @foreach (var pizza in _pizzas)
         {
             <FluentCard Style="max-height: 550px">
                 <div class="basicInfo">
@@ -16,7 +21,7 @@
                     <FluentBadge>Bottom 2</FluentBadge>
                 </div>
                 <div class="action">
-                    <FluentButton>Add to cart</FluentButton>
+                    <FluentButton OnClick="() => AddPizza(pizza)">Add to cart</FluentButton>
                     <FluentButton>Buy</FluentButton>
                 </div>
             </FluentCard>
