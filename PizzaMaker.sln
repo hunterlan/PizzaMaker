@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30128.74
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaMaker.Presentation", "src\PizzaMaker.Presentation\PizzaMaker.Presentation.csproj", "{600C5564-29B8-40F2-8DAF-35E2683C8511}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaMaker.Presentation", "src\PizzaMaker.Presentation\PizzaMaker.Presentation.csproj", "{97D66C51-93DF-4DDC-9C33-87F7B35CE526}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{600C5564-29B8-40F2-8DAF-35E2683C8511}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{600C5564-29B8-40F2-8DAF-35E2683C8511}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{600C5564-29B8-40F2-8DAF-35E2683C8511}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{600C5564-29B8-40F2-8DAF-35E2683C8511}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97D66C51-93DF-4DDC-9C33-87F7B35CE526}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97D66C51-93DF-4DDC-9C33-87F7B35CE526}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97D66C51-93DF-4DDC-9C33-87F7B35CE526}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97D66C51-93DF-4DDC-9C33-87F7B35CE526}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
