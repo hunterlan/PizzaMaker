@@ -3,3 +3,39 @@
 @inject ISessionService SessionService
 
 <PageTitle>Checkout</PageTitle>
+
+<FluentStack>
+    @*Form*@
+    <FluentStack Orientation="Orientation.Vertical">
+        <FluentWizard StepperPosition="StepperPosition.Left"
+                      StepSequence="WizardStepSequence.Visited"
+                      DisplayStepNumber="@(WizardStepStatus.Current | WizardStepStatus.Next)"
+                      Border="WizardBorder.Outside"
+                      Height="auto">
+            <Steps>
+                <FluentWizardStep Label="Delivery information">
+                    <FluentEditForm Model="DeliveryForm" FormName="deliveryInfo">
+                        <DataAnnotationsValidator />
+                        <FluentStack Orientation="Orientation.Vertical">
+                            <FluentTextField Placeholder="Full name" @bind-value="DeliveryForm.Fullname"/>
+                            <FluentTextField TextFieldType="TextFieldType.Tel" Placeholder="Phone number" @bind-value="DeliveryForm.PhoneNumber"/>
+                            <FluentTextField Placeholder="Address" @bind-value="DeliveryForm.Address"></FluentTextField>
+                            <FluentTextArea Label="Any notes?" @bind-value="DeliveryForm.Note"></FluentTextArea>
+                        </FluentStack>
+                        <FluentValidationSummary/>
+                    </FluentEditForm>
+                </FluentWizardStep>
+                <FluentWizardStep Label="Payment">
+                    <FluentEditForm Model="PaymentForm" FormName="paymentInfo" OnValidSubmit="ValidSubmission">
+                        <FluentSelect Items="PaymentMethods"
+                                      OptionText="@(pm => pm.Name)"
+                                      OptionValue="@(pm => pm.Id.ToString())"
+                                      @bind-SelectedOption="PaymentForm.PaymentMethod"></FluentSelect>
+                    </FluentEditForm>
+                </FluentWizardStep>
+            </Steps>
+        </FluentWizard>
+    </FluentStack>
+    @*Sumamry*@
+    <FluentStack Orientation="Orientation.Vertical"></FluentStack>
+</FluentStack>

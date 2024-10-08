@@ -2,12 +2,16 @@
 using Microsoft.AspNetCore.Components;
 using PizzaMaker.Presentation.Models;
 using PizzaMaker.Presentation.Models.Orders;
+using PizzaMaker.Presentation.ViewModels;
 
 namespace PizzaMaker.Presentation.Components.Pages;
 
 public partial class Checkout : ComponentBase
 {
-    [SupplyParameterFromForm] private CheckoutForm Form { get; set; } = new();
+    [SupplyParameterFromForm] private DeliveryForm DeliveryForm { get; set; } = new();
+    [SupplyParameterFromForm] private PaymentForm PaymentForm { get; set; } = new();
+    [CascadingParameter]
+    protected CatalogViewModel CatalogViewModel { get; set; } = new();
     private List<PaymentType> PaymentMethods { get; set; } = [];
     private string? _sessionId = null;
     private Session? _userSession = null;
@@ -32,16 +36,21 @@ public partial class Checkout : ComponentBase
         base.OnInitialized();
     }
 
-    /*protected override Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            
+            _sessionId = await SessionService.GetSessionIdAsync();
+            _userSession = await SessionService.GetSessionAsync(_sessionId);
         }
-    }*/
+    }
+    private void ValidSubmission()
+    {
+        Console.WriteLine("ValidSubmission");
+    }
 }
 
-internal class CheckoutForm
+internal class DeliveryForm
 {
     [Required]
     public string? Fullname { get; set; }
@@ -53,6 +62,9 @@ internal class CheckoutForm
     public string? Address { get; set; }
     
     public string? Note { get; set; }
-    
-    public string? SelectedPaymentMethod { get; set; }
+}
+
+internal class PaymentForm
+{
+    public PaymentType? PaymentMethod { get; set; }
 }
