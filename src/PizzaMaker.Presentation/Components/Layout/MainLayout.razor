@@ -5,6 +5,7 @@
 @inherits LayoutComponentBase
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject IDistributedCache Cache
+@inject NavigationManager NavManager
 
 <FluentMainLayout>
     <Header>
@@ -12,9 +13,9 @@
         <FluentCounterBadge Count="@_cartItemCount"
                             ShowWhen="@(count => count > 0)"
                             Appearance="Appearance.Neutral"
-                            HorizontalPosition="25"
-                            BottomPosition="25">
-            <FluentButton Appearance="Appearance.Accent">
+                            HorizontalPosition="50"
+                            BottomPosition="50">
+            <FluentButton Appearance="Appearance.Accent" OnClick="@(() => NavManager.NavigateTo("/cart"))">
                 <FluentIcon Value="@(new Icons.Regular.Size24.Cart())" Color="@Color.Fill" />
             </FluentButton>
         </FluentCounterBadge>
@@ -31,7 +32,7 @@
 <FluentMenuProvider />
 
 @code{
-    private int _cartItemCount = 0;
+    private int _cartItemCount;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -47,7 +48,7 @@
                 var userSession = await Cache.GetAsync<Session>(sessionId);
                 if (userSession is not null)
                 {
-                    _cartItemCount = userSession.Items.Count;
+                    _cartItemCount = userSession.Items.Select(ci => ci.Quantity).Sum();
                     StateHasChanged();
                 }
             }

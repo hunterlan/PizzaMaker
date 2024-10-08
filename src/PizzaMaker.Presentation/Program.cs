@@ -1,5 +1,6 @@
 using Microsoft.FluentUI.AspNetCore.Components;
 using PizzaMaker.Presentation.Components;
+using PizzaMaker.Presentation.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddStackExchangeRedisCache(options =>
@@ -11,6 +12,8 @@ builder.Services.AddFluentUIComponents();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddScoped<ISessionService, SessionService>();
 
 var app = builder.Build();
 

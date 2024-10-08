@@ -1,6 +1,56 @@
 ﻿@page "/cart"
-<h3>Cart</h3>
+@using PizzaMaker.Presentation.Services
+<PageTitle>Cart</PageTitle>
+@inject ISessionService SessionService
+@inject NavigationManager NavManager
 
-@code {
-    
+@if (_cartItems is not null)
+{
+    @if (_cartItems.Count > 0)
+    {
+        <FluentStack Orientation="Orientation.Vertical">
+            @foreach (var item in _cartItems)
+            {
+                <FluentCard Height="200px" Width="100%">
+                    <FluentStack>
+                        @if (item.Filepath is null)
+                        {
+                            <img src="default_pizza_logo.jpg" alt="Default pizza logo" height="150px"/>
+                            @item.Name
+                        }
+                        <FluentButton OnClick="() => ChangeQuantity(true, item)">
+                            <FluentIcon Value="@(new Icons.Regular.Size24.Add())"></FluentIcon>
+                        </FluentButton>
+                        @item.Quantity
+                        <FluentButton OnClick="() => ChangeQuantity(false, item)">
+                            <FluentIcon Value="@(new Icons.Regular.Size24.Add())"></FluentIcon>
+                        </FluentButton>
+                        @GetTotalPriceForItem(item)
+                    </FluentStack>
+                </FluentCard>
+            }
+            <FluentButton OnClick="@(() => NavManager.NavigateTo("/checkout"))">Go to checkout</FluentButton>
+        </FluentStack>      
+    }
+    else
+    {
+        <h1>Cart is empty!</h1>
+    }
+}
+else
+{
+    <FluentSkeleton Width="500px" Height="250px" Shimmer="true">
+        <svg style="position: absolute; left: 0; top: 0;" id="pattern" width="100%" height="100%">
+            <defs>
+                <mask id="mask" x="0" y="0" width="100%" height="100%">
+                    <rect x="0" y="0" width="100%" height="100%" fill="#ffffff"/>
+                    <rect x="0" y="0" width="100%" height="45%" rx="4"/>
+                    <rect x="25" y="55%" width="90%" height="15px" rx="4"/>
+                    <rect x="25" y="65%" width="70%" height="15px" rx="4"/>
+                    <rect x="25" y="80%" width="90px" height="30px" rx="4"/>
+                </mask>
+            </defs>
+            <rect x="0" y="0" width="100%" height="100%" mask="url(#mask)" fill="#ffffff"/>
+        </svg>
+    </FluentSkeleton>
 }

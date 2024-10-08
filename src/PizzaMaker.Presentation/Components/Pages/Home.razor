@@ -12,6 +12,10 @@
         {
             <FluentCard Style="max-height: 550px">
                 <div class="basicInfo">
+                    @if (pizza.Filepath is null)
+                    {
+                        <img src="/default_pizza_logo.jpg" alt="Default pizza logo"/>
+                    }
                     <h2>@pizza.Name</h2>
                     <p>@pizza.Description</p>
                 </div>
