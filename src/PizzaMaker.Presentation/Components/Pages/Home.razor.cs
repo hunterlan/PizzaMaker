@@ -1,39 +1,18 @@
-﻿using PizzaMaker.Presentation.Models.Pizzas;
+﻿using Microsoft.AspNetCore.Components;
+using PizzaMaker.Presentation.Models.Pizzas;
 using PizzaMaker.Presentation.Extensions;
 using PizzaMaker.Presentation.Models;
 using PizzaMaker.Presentation.Models.Orders;
+using PizzaMaker.Presentation.ViewModels;
 
 namespace PizzaMaker.Presentation.Components.Pages;
 
 public partial class Home
 {
-    private IEnumerable<Item> _pizzas = [];
+    [CascadingParameter]
+    protected CatalogViewModel? CatalogViewModel { get; set; }
+    //private IEnumerable<Item> _pizzas = [];
     private string? _sessionId;
-    protected override Task OnInitializedAsync()
-    {
-        _pizzas =
-        [
-            new Item
-            {
-                Name = "Margherita",
-                Description = "Margherita pizza",
-                Price = 29.00m
-            },
-            new Item
-            {
-                Name = "Diavola",
-                Description = "Diavola pizza",
-                Price = 34.00m
-            },
-            new Item
-            {
-                Name = "Napoletana",
-                Description = "Napoletana pizza",
-                Price = 37.00m
-            }
-        ];
-        return base.OnInitializedAsync();
-    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -86,6 +65,6 @@ public partial class Home
 
         userSessionData.Items.Add(cartItem);
         await Cache.SetAsync(_sessionId!, userSessionData);
-        StateHasChanged();
+        CatalogViewModel!.InvokeCartChange();
     }
 }

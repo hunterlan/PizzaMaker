@@ -5,10 +5,10 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject IDistributedCache Cache
 
-@if (_pizzas.Any())
+@if (CatalogViewModel is not null)
 {
     <FluentStack>
-        @foreach (var pizza in _pizzas)
+        @foreach (var pizza in CatalogViewModel.Items)
         {
             <FluentCard Style="max-height: 550px">
                 <div class="basicInfo">

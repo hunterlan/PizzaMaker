@@ -8,35 +8,11 @@ namespace PizzaMaker.Presentation.Components.Pages;
 public partial class Cart : ComponentBase
 {
     private List<CartItemViewModel>? _cartItems;
-    private List<Item> _items = [];
+    [CascadingParameter]
+    protected CatalogViewModel? CatalogViewModel { get; set; }
     private string? _sessionId = null;
     private Session? _userSession = null;
-
-    protected override Task OnInitializedAsync()
-    {
-        _items =
-        [
-            new Item
-            {
-                Name = "Margherita",
-                Description = "Margherita pizza",
-                Price = 29.00m
-            },
-            new Item
-            {
-                Name = "Diavola",
-                Description = "Diavola pizza",
-                Price = 34.00m
-            },
-            new Item
-            {
-                Name = "Napoletana",
-                Description = "Napoletana pizza",
-                Price = 37.00m
-            }
-        ];
-        return base.OnInitializedAsync();
-    }
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -48,7 +24,7 @@ public partial class Cart : ComponentBase
             {
                 foreach (var cartItem in _userSession.Items)
                 {
-                    var currentItem = _items.First(i => i.Id == cartItem.PizzaId);
+                    var currentItem = CatalogViewModel!.Items.First(i => i.Id == cartItem.PizzaId);
                     _cartItems.Add(new CartItemViewModel(currentItem, cartItem.Quantity));
                 }
             }
@@ -62,7 +38,8 @@ public partial class Cart : ComponentBase
 
     private decimal GetTotalPriceForItem(CartItemViewModel item)
     {
-        return 0;
+        var itemData = CatalogViewModel!.Items.First(i => i.Id == item.Id);
+        return itemData.Price * item.Quantity;
     }
 
     private async Task ChangeQuantity(bool isNegative, CartItemViewModel item)
@@ -83,7 +60,6 @@ public partial class Cart : ComponentBase
         _userSession.Items.Add(userItem);
         
         await SessionService.SetSessionAsync(_userSession, _sessionId!);
-        
-        StateHasChanged();
+        CatalogViewModel!.InvokeCartChange();
     }
 }

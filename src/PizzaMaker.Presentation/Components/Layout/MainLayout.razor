@@ -2,9 +2,11 @@
 @using Microsoft.Extensions.Caching.Distributed
 @using PizzaMaker.Presentation.Extensions
 @using PizzaMaker.Presentation.Models
+@using PizzaMaker.Presentation.Models.Pizzas
+@using PizzaMaker.Presentation.Services
+@using PizzaMaker.Presentation.ViewModels
 @inherits LayoutComponentBase
-@inject ProtectedSessionStorage ProtectedSessionStore
-@inject IDistributedCache Cache
+@inject ISessionService SessionService
 @inject NavigationManager NavManager
 
 <FluentMainLayout>
@@ -21,7 +23,9 @@
         </FluentCounterBadge>
     </Header>
     <Body>
-        @Body
+        <CascadingValue Value="_catalogViewModel">
+            @Body
+        </CascadingValue>
     </Body>
 </FluentMainLayout>
 
@@ -33,25 +37,56 @@
 
 @code{
     private int _cartItemCount;
+    private CatalogViewModel _catalogViewModel;
+    protected override Task OnInitializedAsync()
+    {
+        _catalogViewModel = new CatalogViewModel
+        {
+            Items = [
+                new Item
+                {
+                    Name = "Margherita",
+                    Description = "Margherita pizza",
+                    Price = 29.00m
+                },
+                new Item
+                {
+                    Name = "Diavola",
+                    Description = "Diavola pizza",
+                    Price = 34.00m
+                },
+                new Item
+                {
+                    Name = "Napoletana",
+                    Description = "Napoletana pizza",
+                    Price = 37.00m
+                }
+            ],
+        };
+        _catalogViewModel.OnCartCountChanged += UpdateCountCart;
+        return base.OnInitializedAsync();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            string? sessionId = null;
-            var sessionIdResult = await ProtectedSessionStore.GetAsync<string>("sessionId");
-            if (sessionIdResult.Success)
-            {
-                sessionId = sessionIdResult.Value;
-            }
-            if (sessionId is not null)
-            {
-                var userSession = await Cache.GetAsync<Session>(sessionId);
-                if (userSession is not null)
-                {
-                    _cartItemCount = userSession.Items.Select(ci => ci.Quantity).Sum();
-                    StateHasChanged();
-                }
-            }
+            await SetCartItemCount();
+            StateHasChanged();
         }
     }
+
+    private async Task UpdateCountCart()
+    {
+        await SetCartItemCount();
+        StateHasChanged();
+    }
+
+    private async Task SetCartItemCount()
+    {
+        var sessionId = await SessionService.GetSessionIdAsync();
+        var userSession = await SessionService.GetSessionAsync(sessionId);
+        _cartItemCount = userSession.Items.Select(ci => ci.Quantity).Sum();
+    }
+
 }
