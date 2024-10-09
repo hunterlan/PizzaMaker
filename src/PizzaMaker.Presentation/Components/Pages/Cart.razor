@@ -29,7 +29,10 @@
                     </FluentStack>
                 </FluentCard>
             }
-            <FluentButton OnClick="@(() => NavManager.NavigateTo("/checkout"))">Go to checkout</FluentButton>
+            <FluentStack>
+                <FluentButton OnClick="@(() => NavManager.NavigateTo("/checkout"))">Go to checkout</FluentButton>
+                <FluentButton OnClick="@(() => EmptyCart())">Empty cart</FluentButton>
+            </FluentStack>
         </FluentStack>      
     }
     else

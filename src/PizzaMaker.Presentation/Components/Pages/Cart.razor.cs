@@ -62,4 +62,12 @@ public partial class Cart : ComponentBase
         await SessionService.SetSessionAsync(_userSession, _sessionId!);
         CatalogViewModel!.InvokeCartChange();
     }
+
+    private async Task EmptyCart()
+    {
+        _userSession!.Items = [];
+        _cartItems = [];
+        await SessionService.SetSessionAsync(_userSession, _sessionId!);
+        CatalogViewModel!.InvokeCartChange();
+    }
 }
