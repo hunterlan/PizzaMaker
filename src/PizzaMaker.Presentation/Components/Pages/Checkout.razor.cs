@@ -13,6 +13,7 @@ public partial class Checkout : ComponentBase
     [CascadingParameter]
     protected CatalogViewModel CatalogViewModel { get; set; } = new();
     private List<PaymentType> PaymentMethods { get; set; } = [];
+    private List<CartItemViewModel>? _cartItems;
     private string? _sessionId = null;
     private Session? _userSession = null;
     private decimal TotalPrice = 0;
@@ -42,8 +43,45 @@ public partial class Checkout : ComponentBase
         {
             _sessionId = await SessionService.GetSessionIdAsync();
             _userSession = await SessionService.GetSessionAsync(_sessionId);
+            
+            _cartItems = [];
+            if (_userSession.Items.Count > 0)
+            {
+                foreach (var cartItem in _userSession.Items)
+                {
+                    var currentItem = CatalogViewModel!.Items.First(i => i.Id == cartItem.PizzaId);
+                    _cartItems.Add(new CartItemViewModel(currentItem, cartItem.Quantity));
+                }
+            }
+
+            if (_cartItems.Count > 0)
+            {
+                StateHasChanged();
+            }
+            else
+            {
+                NavManager.NavigateTo("/cart");
+            }
         }
     }
+    private decimal GetTotalPriceForItem(CartItemViewModel item)
+    {
+        var itemData = CatalogViewModel!.Items.First(i => i.Id == item.Id);
+        return itemData.Price * item.Quantity;
+    }
+
+    private decimal GetTotalPrice()
+    {
+        decimal totalPrice = 0;
+        foreach (var cartItem in _cartItems)
+        {
+            var itemData = CatalogViewModel!.Items.First(i => i.Id == cartItem.Id);
+            totalPrice += itemData.Price * cartItem.Quantity;
+        }
+
+        return totalPrice;
+    }
+
     private void ValidSubmission()
     {
         Console.WriteLine("ValidSubmission");

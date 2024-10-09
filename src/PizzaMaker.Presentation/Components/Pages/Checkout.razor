@@ -1,10 +1,35 @@
 ﻿@page "/checkout"
 @using PizzaMaker.Presentation.Services
 @inject ISessionService SessionService
+@inject NavigationManager NavManager
 
 <PageTitle>Checkout</PageTitle>
 
-<FluentStack>
+<FluentStack Orientation="Orientation.Vertical">
+    @*Sumamry*@
+    <FluentStack Orientation="Orientation.Vertical">
+        @if (_cartItems is not null)
+        {
+        @foreach (var item in _cartItems)
+        {
+        <FluentCard Height="200px" Width="100%">
+            <FluentStack>
+                @if (item.Filepath is null)
+                {
+                <img src="default_pizza_logo.jpg" alt="Default pizza logo" height="100px"/>
+                @item.Name
+                }
+                @item.Quantity
+                @GetTotalPriceForItem(item)
+            </FluentStack>
+        </FluentCard>
+        }
+        <FluentStack>
+            <h2>Summary</h2>
+            @GetTotalPrice()
+        </FluentStack>
+        }
+    </FluentStack>
     @*Form*@
     <FluentStack Orientation="Orientation.Vertical">
         <FluentWizard StepperPosition="StepperPosition.Left"
@@ -15,7 +40,7 @@
             <Steps>
                 <FluentWizardStep Label="Delivery information">
                     <FluentEditForm Model="DeliveryForm" FormName="deliveryInfo">
-                        <DataAnnotationsValidator />
+                        <DataAnnotationsValidator/>
                         <FluentStack Orientation="Orientation.Vertical">
                             <FluentTextField Placeholder="Full name" @bind-value="DeliveryForm.Fullname"/>
                             <FluentTextField TextFieldType="TextFieldType.Tel" Placeholder="Phone number" @bind-value="DeliveryForm.PhoneNumber"/>
@@ -36,6 +61,4 @@
             </Steps>
         </FluentWizard>
     </FluentStack>
-    @*Sumamry*@
-    <FluentStack Orientation="Orientation.Vertical"></FluentStack>
 </FluentStack>
