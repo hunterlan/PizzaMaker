@@ -16,7 +16,6 @@ public partial class Checkout : ComponentBase
     private List<CartItemViewModel>? _cartItems;
     private string? _sessionId = null;
     private Session? _userSession = null;
-    private decimal TotalPrice = 0;
 
     protected override void OnInitialized()
     {
@@ -73,7 +72,7 @@ public partial class Checkout : ComponentBase
     private decimal GetTotalPrice()
     {
         decimal totalPrice = 0;
-        foreach (var cartItem in _cartItems)
+        foreach (var cartItem in _cartItems!)
         {
             var itemData = CatalogViewModel!.Items.First(i => i.Id == cartItem.Id);
             totalPrice += itemData.Price * cartItem.Quantity;

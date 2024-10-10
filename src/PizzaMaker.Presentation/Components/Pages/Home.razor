@@ -7,30 +7,32 @@
 
 @if (CatalogViewModel is not null)
 {
-    <FluentStack>
+    <FluentGrid>
         @foreach (var pizza in CatalogViewModel.Items)
         {
-            <FluentCard Style="max-height: 550px">
-                <div class="basicInfo">
-                    @if (pizza.Filepath is null)
-                    {
-                        <img src="/default_pizza_logo.jpg" alt="Default pizza logo"/>
-                    }
-                    <h2>@pizza.Name</h2>
-                    <p>@pizza.Description</p>
-                </div>
-                <b>@pizza.Price</b>
-                <div class="labelGroup">
-                    <FluentBadge>Bottom 1</FluentBadge>
-                    <FluentBadge>Bottom 2</FluentBadge>
-                </div>
-                <div class="action">
-                    <FluentButton OnClick="() => AddPizza(pizza)">Add to cart</FluentButton>
-                    <FluentButton>Buy</FluentButton>
-                </div>
-            </FluentCard>
+            <FluentGridItem xs="12" sm="6" md="3">
+                <FluentCard >
+                    <div class="basicInfo">
+                        @if (pizza.Filepath is null)
+                        {
+                        <img src="/default_pizza_logo.jpg" alt="Default pizza logo" width="100%"/>
+                        }
+                        <h2>@pizza.Name</h2>
+                        <p>@pizza.Description</p>
+                    </div>
+                    <b>@pizza.Price</b>
+                    <div class="labelGroup">
+                        <FluentBadge>Bottom 1</FluentBadge>
+                        <FluentBadge>Bottom 2</FluentBadge>
+                    </div>
+                    <div class="action">
+                        <FluentButton OnClick="() => AddPizza(pizza)">Add to cart</FluentButton>
+                        <FluentButton>Buy</FluentButton>
+                    </div>
+                </FluentCard>
+            </FluentGridItem>
         }
-    </FluentStack>
+    </FluentGrid>
 }
 else
 {
