@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using PizzaMaker.Presentation.Models;
-using PizzaMaker.Presentation.Models.Pizzas;
 using PizzaMaker.Presentation.ViewModels;
 
 namespace PizzaMaker.Presentation.Components.Pages;

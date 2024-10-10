@@ -1,5 +1,4 @@
 ﻿using PizzaMaker.Presentation.Models.Orders;
-using PizzaMaker.Presentation.Models.Pizzas;
 using PizzaMaker.Presentation.Models.Users;
 
 namespace PizzaMaker.Presentation.Models;

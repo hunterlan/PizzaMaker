@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.FluentUI.AspNetCore.Components;
+using PizzaMaker.Presentation;
 using PizzaMaker.Presentation.Components;
 using PizzaMaker.Presentation.Services;
 
@@ -8,12 +10,15 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
     options.InstanceName = "PizzaInstance";
 });
+builder.Services.AddDbContext<PizzaContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SQLServer")));
 builder.Services.AddFluentUIComponents();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddScoped<ISessionService, SessionService>();
+builder.Services.AddScoped<ICatalogService, CatalogService>();
 
 var app = builder.Build();
 

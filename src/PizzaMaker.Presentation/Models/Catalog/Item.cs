@@ -1,4 +1,4 @@
-﻿namespace PizzaMaker.Presentation.Models.Pizzas;
+﻿namespace PizzaMaker.Presentation.Models.Catalog;
 
 public class Item
 {
@@ -7,5 +7,5 @@ public class Item
     public decimal Price { get; set; }
     public required string Description { get; set; }
     public string? Filepath { get; set; }
-    public List<Category> Categories = [];
+    public ICollection<Label> Label { get; set; } = [];
 }

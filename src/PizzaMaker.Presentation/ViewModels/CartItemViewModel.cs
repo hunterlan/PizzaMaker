@@ -1,4 +1,4 @@
-﻿using PizzaMaker.Presentation.Models.Pizzas;
+﻿using PizzaMaker.Presentation.Models.Catalog;
 
 namespace PizzaMaker.Presentation.ViewModels;
 
