@@ -1,0 +1,66 @@
+﻿@page "/checkout"
+@using PizzaMaker.Presentation.Services
+@inject ISessionService SessionService
+@inject ICheckoutService CheckoutService
+@inject IPaymentService PaymentService
+@inject NavigationManager NavManager
+
+<PageTitle>Checkout</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical">
+    @*Sumamry*@
+    <FluentStack Orientation="Orientation.Vertical">
+        @if (_cartItems is not null)
+        {
+        @foreach (var item in _cartItems)
+        {
+        <FluentCard Height="200px" Width="100%">
+            <FluentStack>
+                @if (item.Filepath is null)
+                {
+                <img src="default_pizza_logo.jpg" alt="Default pizza logo" height="100px"/>
+                @item.Name
+                }
+                @item.Quantity
+                @GetTotalPriceForItem(item)
+            </FluentStack>
+        </FluentCard>
+        }
+        <FluentStack>
+            <h2>Summary</h2>
+            @GetTotalPrice()
+        </FluentStack>
+        }
+    </FluentStack>
+    @*Form*@
+    <FluentStack Orientation="Orientation.Vertical">
+        <FluentWizard StepperPosition="StepperPosition.Left"
+                      StepSequence="WizardStepSequence.Visited"
+                      DisplayStepNumber="@(WizardStepStatus.Current | WizardStepStatus.Next)"
+                      Border="WizardBorder.Outside"
+                      Height="auto">
+            <Steps>
+                <FluentWizardStep Label="Delivery information">
+                    <FluentEditForm Model="DeliveryForm" FormName="deliveryInfo">
+                        <DataAnnotationsValidator/>
+                        <FluentStack Orientation="Orientation.Vertical">
+                            <FluentTextField Placeholder="Full name" @bind-value="DeliveryForm.Fullname"/>
+                            <FluentTextField TextFieldType="TextFieldType.Tel" Placeholder="Phone number" @bind-value="DeliveryForm.PhoneNumber"/>
+                            <FluentTextField Placeholder="Address" @bind-value="DeliveryForm.Address"></FluentTextField>
+                            <FluentTextArea Label="Any notes?" @bind-value="DeliveryForm.Note"></FluentTextArea>
+                        </FluentStack>
+                        <FluentValidationSummary/>
+                    </FluentEditForm>
+                </FluentWizardStep>
+                <FluentWizardStep Label="Payment">
+                    <FluentEditForm Model="PaymentForm" FormName="paymentInfo" OnValidSubmit="ValidSubmission">
+                        <FluentSelect Items="PaymentMethods"
+                                      OptionText="@(pm => pm.Name)"
+                                      OptionValue="@(pm => pm.Id.ToString())"
+                                      @bind-SelectedOption="PaymentForm.PaymentMethod"></FluentSelect>
+                    </FluentEditForm>
+                </FluentWizardStep>
+            </Steps>
+        </FluentWizard>
+    </FluentStack>
+</FluentStack>

@@ -1,0 +1,70 @@
+﻿@using PizzaMaker.Presentation.Models.Catalog
+@using PizzaMaker.Presentation.Services
+@using PizzaMaker.Presentation.ViewModels
+@inherits LayoutComponentBase
+@inject ISessionService SessionService
+@inject ICatalogService CatalogService
+@inject NavigationManager NavManager
+
+<FluentMainLayout>
+    <Header>
+        <h3>Pizza maker</h3>
+        <FluentCounterBadge Count="@_cartItemCount"
+                            ShowWhen="@(count => count > 0)"
+                            Appearance="Appearance.Neutral"
+                            HorizontalPosition="50"
+                            BottomPosition="50">
+            <FluentButton Appearance="Appearance.Accent" OnClick="@(() => NavManager.NavigateTo("/cart"))">
+                <FluentIcon Value="@(new Icons.Regular.Size24.Cart())" Color="@Color.Fill" />
+            </FluentButton>
+        </FluentCounterBadge>
+    </Header>
+    <Body>
+        <CascadingValue Value="_catalogViewModel">
+            @Body
+        </CascadingValue>
+    </Body>
+</FluentMainLayout>
+
+<FluentToastProvider />
+<FluentDialogProvider />
+<FluentTooltipProvider />
+<FluentMessageBarProvider />
+<FluentMenuProvider />
+
+@code{
+    private int _cartItemCount;
+    private CatalogViewModel _catalogViewModel;
+    protected override Task OnInitializedAsync()
+    {
+        _catalogViewModel = new CatalogViewModel
+        {
+            Items = CatalogService.GetItems().ToList()
+        };
+        _catalogViewModel.OnCartCountChanged += UpdateCountCart;
+        return base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await SetCartItemCount();
+            StateHasChanged();
+        }
+    }
+
+    private async Task UpdateCountCart()
+    {
+        await SetCartItemCount();
+        StateHasChanged();
+    }
+
+    private async Task SetCartItemCount()
+    {
+        var sessionId = await SessionService.GetSessionIdAsync();
+        var userSession = await SessionService.GetSessionAsync(sessionId);
+        _cartItemCount = userSession.Items.Select(ci => ci.Quantity).Sum();
+    }
+
+}
