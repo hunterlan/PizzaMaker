@@ -19,6 +19,8 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<ICatalogService, CatalogService>();
+builder.Services.AddScoped<ICheckoutService, CheckoutService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 var app = builder.Build();
 

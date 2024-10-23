@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Components;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PizzaMaker.Presentation.Models;
+using PizzaMaker.Presentation.Models.Catalog;
 using PizzaMaker.Presentation.Models.Orders;
 using PizzaMaker.Presentation.ViewModels;
 
@@ -12,27 +14,14 @@ public partial class Checkout : ComponentBase
     [SupplyParameterFromForm] private PaymentForm PaymentForm { get; set; } = new();
     [CascadingParameter]
     protected CatalogViewModel CatalogViewModel { get; set; } = new();
-    private List<PaymentType> PaymentMethods { get; set; } = [];
+    private IEnumerable<PaymentType> PaymentMethods { get; set; } = [];
     private List<CartItemViewModel>? _cartItems;
     private string? _sessionId = null;
     private Session? _userSession = null;
 
     protected override void OnInitialized()
     {
-        PaymentMethods = [
-            new PaymentType
-            {
-              Id = 1,
-              IsImmediate = false,
-              Name = "Cash"
-            },
-            new PaymentType
-            {
-                Id = 2,
-                IsImmediate = true,
-                Name = "Visa/Mastercard"
-            }
-        ];
+        PaymentMethods = PaymentService.GetPaymentTypes();
         base.OnInitialized();
     }
 
@@ -81,9 +70,25 @@ public partial class Checkout : ComponentBase
         return totalPrice;
     }
 
-    private void ValidSubmission()
+    private async Task ValidSubmission()
     {
-        Console.WriteLine("ValidSubmission");
+        var checkout = new Models.Orders.Checkout()
+        {
+            Fullname = DeliveryForm.Fullname!,
+            PhoneNumber = DeliveryForm.PhoneNumber!,
+            Address = DeliveryForm.Address!,
+            Note = DeliveryForm.Note!,
+            PaymentTypeId = PaymentForm.PaymentMethod!.Id,
+            UserId = null,
+        };
+        var itemCount = new Dictionary<Item, int>();
+        foreach (var cartItem in _cartItems!)
+        {
+            var item = CatalogViewModel.Items.First(i => i.Id == cartItem.Id);
+            itemCount.Add(item, cartItem.Quantity);
+        }
+        await CheckoutService.CreateAsync(checkout, itemCount);
+        NavManager.NavigateTo("/");
     }
 }
 
